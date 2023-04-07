@@ -7,8 +7,14 @@ const ds = require("./service/dataService")
 //import jsonwebtoken
 const jwt = require("jsonwebtoken")
 
+//import cors
+const cors=require("cors")
+
 //App creation
 const app = express()
+
+//integrate app with frontend
+app.use(cors({origin:'http://localhost:4200'}))
 
 //To Covert All Datas From JSON To Js
 app.use(express.json())
@@ -16,7 +22,7 @@ app.use(express.json())
 //Middleware Creation
 const jwtMiddleware = (req, res, next) => {
     try {
-        //accessing data from request body
+        //accessing data from request header
         const token = req.headers['access_token']
 
         //verifying the token with secret key
@@ -40,8 +46,6 @@ app.post("/register", (req, res) => {
     ds.register(req.body.acno, req.body.uname, req.body.psw).then(result => {
         res.status(result.statusCode).json(result)
     })
-
-
 })
 
 //login - get
@@ -75,13 +79,19 @@ app.post("/withdraw", jwtMiddleware, (req, res) => {
 })
 
 //transaction - get
-app.get("/transaction", jwtMiddleware, (req, res) => {
+app.post("/transaction", jwtMiddleware, (req, res) => {
     ds.getTransaction(req.body.acno).then(result=>{
     res.status(result.statusCode).json(result)
     })
 })
 
 //delete - delete
+
+app.delete("/delete/:acno",jwtMiddleware,(req,res)=>{
+    ds.deleteAcc(req.params.acno).then(result=>{
+        res.status(result.statusCode).json(result)
+        })
+})
 
 
 //resolve api

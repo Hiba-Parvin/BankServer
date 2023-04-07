@@ -1,15 +1,6 @@
 const jwt = require("jsonwebtoken")
 const db = require('./db')
 
-userDetails = {
-  1001: { username: "Rhysand", acno: 1001, password: "abc", balance: 0, transaction: [] },
-  1002: { username: "Amren", acno: 1002, password: "abc", balance: 0, transaction: [] },
-  1003: { username: "Cassian", acno: 1003, password: "abc", balance: 0, transaction: [] },
-  1004: { username: "Azriel", acno: 1004, password: "abc", balance: 0, transaction: [] },
-  1005: { username: "Lyssandra", acno: 1005, password: "abc", balance: 0, transaction: [] },
-  1006: { username: "Yrene", acno: 1006, password: "abc", balance: 0, transaction: [] },
-}
-
 //Note: register synchronous method, as findOne() method is asynchronous method, register becomes asynchronous method as well. When register method is called from index.js, it has to use promise ie., then() to store data.
 
 register = (acno, uname, psw) => {
@@ -32,7 +23,6 @@ register = (acno, uname, psw) => {
         transaction: []
       })
       newUser.save()
-      //Inorder to reflect the changes made in model to collection we have to call save() method.
       return {
         status: true,
         message: "Account Registered Successfully",
@@ -263,6 +253,25 @@ getTransaction = (acno) => {
   })
 
 }
+
+deleteAcc=(acno)=>{
+  return db.User.deleteOne({acno}).then(user => {
+    if (user) {
+      return {
+        status: true,
+        message: "Your Account Has Been Deleted !" ,        
+        statusCode: 200
+      }
+    }
+    else{
+            return {
+        status: false,
+        message: "Account Not Found !",
+        statusCode: 402
+      }
+    }
+  })
+}
   
 
 module.exports = {
@@ -270,5 +279,6 @@ module.exports = {
   login,
   deposit,
   withdraw,
-  getTransaction
+  getTransaction,
+  deleteAcc
 }
